@@ -1,0 +1,100 @@
+from shutil import move
+import pygame
+import sys
+import random
+
+pygame.init()
+fps=65
+fpsclock=pygame.time.Clock()
+sur_obj=pygame.display.set_mode((800,600))
+pygame.display.set_caption("Pong")
+WHITE=(255,255,255)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+BLACK = (0, 0, 0)
+player1Y = 265
+player2Y = 265
+movementSpeed = 15
+player1Score = 0
+player2Score = 0
+font = pygame.font.Font('freesansbold.ttf', 20)
+xSpeed = 2
+ySpeed = 2
+ballRadius = 10
+upperBoundsY = 50
+HEIGHT = 600
+LENGTH = 800
+paddleHeight = 70
+paddleWidth = 15
+speedMultiplier = 2
+ball = pygame.Rect(390, 290, 20, 20)
+x_speed, y_speed = 1, 1
+
+def count_score(player1Score, player2Score):
+    player1ScoreText = font.render(str(player1Score), True, GREEN)
+    player2ScoreText = font.render(str(player2Score), True, RED)
+    sur_obj.blit(player1ScoreText, (300, 25))
+    sur_obj.blit(player2ScoreText, (500, 25))
+
+def upper_boundary():
+    pygame.draw.line(sur_obj, WHITE, (0, upperBoundsY), (LENGTH, upperBoundsY))
+
+while True:
+    sur_obj.fill(BLACK)
+    #Draw paddles
+    pygame.draw.rect(sur_obj, GREEN, (0, player1Y, paddleWidth, paddleHeight))
+    pygame.draw.rect(sur_obj, RED, (LENGTH-paddleWidth, player2Y, paddleWidth, paddleHeight))
+    #Print score and upper boundary
+    count_score(player1Score, player2Score)
+    upper_boundary()
+    #If quit is pressed, quit
+    for eve in pygame.event.get():
+        if eve.type==pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+    #Keeping the ball in bounds
+    if ball.y >= HEIGHT-(ballRadius*2):
+        y_speed = -1
+    if ball.y <= upperBoundsY:
+        y_speed = 1
+    if ball.x <= 0:
+        player2Score += 1
+        ball.center = (LENGTH/2, HEIGHT/2)
+        x_speed, y_speed = random.choice([1, -1]), random.choice([1, -1])
+    #If ball goes out of bounds, restart from the center and shoot off in random direction
+    if ball.x >= LENGTH:
+        player1Score += 1
+        ball.center = (LENGTH/2, HEIGHT/2)
+        x_speed, y_speed = random.choice([1, -1]), random.choice([1, -1])
+    #Logic for if ball hits the paddle
+    if ball.x <= paddleWidth and ball.y in range(player1Y, player1Y + paddleHeight):
+        x_speed = 1
+    if (LENGTH-paddleWidth) - ball.width <= ball.x <= LENGTH-paddleWidth and ball.y in range(player2Y, player2Y + paddleHeight):
+        x_speed = -1
+    #Control ball speed
+    ball.x += x_speed * speedMultiplier
+    ball.y += y_speed * speedMultiplier
+    #Draw ball
+    pygame.draw.circle(sur_obj, WHITE, ball.center, ballRadius)
+    #Keep paddles in bounds
+    if HEIGHT-paddleHeight < player1Y:
+        player1Y = HEIGHT-paddleHeight
+    if player1Y < upperBoundsY:
+        player1Y = upperBoundsY
+    if HEIGHT-paddleHeight < player2Y:
+        player2Y = HEIGHT-paddleHeight
+    if player2Y < upperBoundsY:
+        player2Y = upperBoundsY
+    #Move paddles in response to keyboard input
+    key_input = pygame.key.get_pressed()   
+    if key_input[pygame.K_q]:
+        player1Y -= movementSpeed
+    if key_input[pygame.K_a]:
+        player1Y += movementSpeed
+    if key_input[pygame.K_p]:
+        player2Y -= movementSpeed
+    if key_input[pygame.K_l]:
+        player2Y += movementSpeed
+    #Update the display
+    pygame.display.update()
+    fpsclock.tick(fps)
