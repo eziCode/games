@@ -1,0 +1,363 @@
+from locale import YESEXPR
+from tkinter import Y
+from tkinter.tix import COLUMN
+import numpy as np
+import pygame
+import sys
+import math
+
+BLUE = (0, 0, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
+
+ROW_COUNT = 4
+COLUMN_COUNT = 4
+possible_moves = []
+scoringDict = {}
+
+def create_board():
+    board = np.zeros((ROW_COUNT, COLUMN_COUNT))
+    return board
+
+def is_move_valid(board, row, col):
+    if board[row][col] != 0:
+        return False
+
+def drop_piece(board, row, col, piece):
+    board[row][col] = piece
+
+def print_board(board):
+    print(np.flip(board, 0))
+
+def winning_move(board, piece):
+    for c in range(COLUMN_COUNT - 1):
+        for r in range(ROW_COUNT):
+            if board[r][c] == piece and board[r][(c + 1) % 4] == piece and board[r][(c + 2) % 4] == piece:
+                return True
+
+    for c in range(COLUMN_COUNT):
+        for r in range(ROW_COUNT - 1):
+            if board[r][c] == piece and board[(r + 1) % 4][c] == piece and board[(r + 2) % 4][c] == piece:
+                return True
+    
+    for c in range(COLUMN_COUNT - 1):
+        for r in range(ROW_COUNT - 1):
+            if board[r][c] == piece and board[(r + 1) % 4][(c + 1) % 4] == piece and board[(r + 2) % 4][(c + 2) % 4] == piece:
+                return True
+    
+    for c in range(COLUMN_COUNT - 1):
+        for r in range(1, ROW_COUNT):
+            if board[r][c] == piece and board[(r - 1) % 4][(c + 1) % 4] == piece and board[(r - 2) % 4][(c + 2) % 4] == piece:
+                return True
+
+def draw_board(board):
+    pygame.draw.line(screen, BLUE, (125, 0), (125, 600))
+    pygame.draw.line(screen, BLUE, (300, 0), (300, 600))
+    pygame.draw.line(screen, BLUE, (475, 0), (475, 600))
+    pygame.draw.line(screen, BLUE, (0, 125), (600, 125))
+    pygame.draw.line(screen, BLUE, (0, 300), (600, 300))
+    pygame.draw.line(screen, BLUE, (0, 475), (600, 475))
+
+    pygame.display.update()
+
+
+board = create_board()
+print_board(board)
+game_over = False
+turn = 0
+
+pygame.init()
+
+size = (600, 600)
+
+screen = pygame.display.set_mode(size)
+draw_board(board)
+pygame.display.update()
+
+myfont = pygame.font.SysFont("monospace", 75)
+
+while not game_over:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            sys.exit()
+        
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if turn == 0:
+                x,y = pygame.mouse.get_pos()
+                if x <= 125 and y <= 125:
+                    if is_move_valid(board, 3, 0) == False:
+                        continue
+                    else:
+                        drop_piece(board, 3, 0, 1)
+                        pygame.draw.circle(screen, RED, (62, 62), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif x <= 125 and 125 < y <= 300:
+                    if is_move_valid(board, 2, 0) == False:
+                        continue
+                    else:
+                        drop_piece(board, 2, 0, 1)
+                        pygame.draw.circle(screen, RED, (62, 212), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif x <= 125 and 300 < y <= 475:
+                    if is_move_valid(board, 1, 0) == False:
+                        continue
+                    else:
+                        drop_piece(board, 1, 0, 1)
+                        pygame.draw.circle(screen, RED, (62, 387), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif x <= 125 and y > 475:
+                    if is_move_valid(board, 0, 0) == False:
+                        continue
+                    else:
+                        drop_piece(board, 0, 0, 1)
+                        pygame.draw.circle(screen, RED, (62, 537), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif 125 < x <= 300 and y <= 125:
+                    if is_move_valid(board, 3, 1) == False:
+                        continue
+                    else:
+                        drop_piece(board, 3, 1, 1)
+                        pygame.draw.circle(screen, RED, (212, 62), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif 125 < x <= 300 and 125 < y <= 300:
+                    if is_move_valid(board, 2, 1) == False:
+                        continue
+                    else:
+                        drop_piece(board, 2, 1, 1)
+                        pygame.draw.circle(screen, RED, (212, 212), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif 125 < x <= 300 and 300 < y <= 475:
+                    if is_move_valid(board, 1, 1) == False:
+                        continue
+                    else:
+                        drop_piece(board, 1, 1, 1)
+                        pygame.draw.circle(screen, RED, (212, 387), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif 125 < x <= 300 and y > 475:
+                    if is_move_valid(board, 0, 1) == False:
+                        continue
+                    else:
+                        drop_piece(board, 0, 1, 1)
+                        pygame.draw.circle(screen, RED, (212, 537), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif 300 < x <= 475 and y <= 125:
+                    if is_move_valid(board, 3, 2) == False:
+                        continue
+                    else:
+                        drop_piece(board, 3, 2, 1)
+                        pygame.draw.circle(screen, RED, (387, 62), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif 300 < x <= 475 and 125 < y <= 300:
+                    if is_move_valid(board, 2, 2) == False:
+                        continue
+                    else:
+                        drop_piece(board, 2, 2, 1)
+                        pygame.draw.circle(screen, RED, (387, 212), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif 300 < x <= 475 and 300 < y <= 475:
+                    if is_move_valid(board, 1, 2) == False:
+                        continue
+                    else:
+                        drop_piece(board, 1, 2, 1)
+                        pygame.draw.circle(screen, RED, (387, 387), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif 300 < x <= 475 and y > 475:
+                    if is_move_valid(board, 0, 2) == False:
+                        continue
+                    else:
+                        drop_piece(board, 0, 2, 1)
+                        pygame.draw.circle(screen, RED, (387, 537), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif x > 475 and y <= 125:
+                    if is_move_valid(board, 3, 3) == False:
+                        continue
+                    else:
+                        drop_piece(board, 3, 3, 1)
+                        pygame.draw.circle(screen, RED, (537, 62), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif x > 475 and 125 < y <= 300:
+                    if is_move_valid(board, 2, 3) == False:
+                        continue
+                    else:
+                        drop_piece(board, 2, 3, 1)
+                        pygame.draw.circle(screen, RED, (537, 212), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif x > 475 and 300 < y <= 475:
+                    if is_move_valid(board, 1, 3) == False:
+                        continue
+                    else:
+                        drop_piece(board, 1, 3, 1)
+                        pygame.draw.circle(screen, RED, (537, 387), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif x > 475 and y > 475:
+                    if is_move_valid(board, 0, 3) == False:
+                        continue
+                    else:
+                        drop_piece(board, 0, 3, 1)
+                        pygame.draw.circle(screen, RED, (537, 537), 30)
+                        pygame.display.update()
+                        print_board(board)
+                if winning_move(board, 1):
+                    screen.fill(BLACK)
+                    label = myfont.render("Player 1 Wins!", True, 1, RED)
+                    screen.blit(label, (10, 10))
+                    pygame.display.update()
+                    game_over = True
+            else:
+                x,y = pygame.mouse.get_pos()
+                if x <= 125 and y <= 125:
+                    if is_move_valid(board, 3, 0) == False:
+                        continue
+                    else:
+                        drop_piece(board, 3, 0, 2)
+                        pygame.draw.circle(screen, YELLOW, (62, 62), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif x <= 125 and 125 < y <= 300:
+                    if is_move_valid(board, 2, 0) == False:
+                        continue
+                    else:
+                        drop_piece(board, 2, 0, 2)
+                        pygame.draw.circle(screen, YELLOW, (62, 212), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif x <= 125 and 300 < y <= 475:
+                    if is_move_valid(board, 1, 0) == False:
+                        continue
+                    else:
+                        drop_piece(board, 1, 0, 2)
+                        pygame.draw.circle(screen, YELLOW, (62, 387), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif x <= 125 and y > 475:
+                    if is_move_valid(board, 0, 0) == False:
+                        continue
+                    else:
+                        drop_piece(board, 0, 0, 2)
+                        pygame.draw.circle(screen, YELLOW, (62, 537), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif 125 < x <= 300 and y <= 125:
+                    if is_move_valid(board, 3, 1) == False:
+                        continue
+                    else:
+                        drop_piece(board, 3, 1, 2)
+                        pygame.draw.circle(screen, YELLOW, (212, 62), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif 125 < x <= 300 and 125 < y <= 300:
+                    if is_move_valid(board, 2, 1) == False:
+                        continue
+                    else:
+                        drop_piece(board, 2, 1, 2)
+                        pygame.draw.circle(screen, YELLOW, (212, 212), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif 125 < x <= 300 and 300 < y <= 475:
+                    if is_move_valid(board, 1, 1) == False:
+                        continue
+                    else:
+                        drop_piece(board, 1, 1, 2)
+                        pygame.draw.circle(screen, YELLOW, (212, 387), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif 125 < x <= 300 and y > 475:
+                    if is_move_valid(board, 0, 1) == False:
+                        continue
+                    else:
+                        drop_piece(board, 0, 1, 2)
+                        pygame.draw.circle(screen, YELLOW, (212, 537), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif 300 < x <= 475 and y <= 125:
+                    if is_move_valid(board, 3, 2) == False:
+                        continue
+                    else:
+                        drop_piece(board, 3, 2, 2)
+                        pygame.draw.circle(screen, YELLOW, (387, 62), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif 300 < x <= 475 and 125 < y <= 300:
+                    if is_move_valid(board, 2, 2) == False:
+                        continue
+                    else:
+                        drop_piece(board, 2, 2, 2)
+                        pygame.draw.circle(screen, YELLOW, (387, 212), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif 300 < x <= 475 and 300 < y <= 475:
+                    if is_move_valid(board, 1, 2) == False:
+                        continue
+                    else:
+                        drop_piece(board, 1, 2, 2)
+                        pygame.draw.circle(screen, YELLOW, (387, 387), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif 300 < x <= 475 and y > 475:
+                    if is_move_valid(board, 0, 2) == False:
+                        continue
+                    else:
+                        drop_piece(board, 0, 2, 2)
+                        pygame.draw.circle(screen, YELLOW, (387, 537), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif x > 475 and y <= 125:
+                    if is_move_valid(board, 3, 3) == False:
+                        continue
+                    else:
+                        drop_piece(board, 3, 3, 2)
+                        pygame.draw.circle(screen, YELLOW, (537, 62), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif x > 475 and 125 < y <= 300:
+                    if is_move_valid(board, 2, 3) == False:
+                        continue
+                    else:
+                        drop_piece(board, 2, 3, 2)
+                        pygame.draw.circle(screen, YELLOW, (537, 212), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif x > 475 and 300 < y <= 475:
+                    if is_move_valid(board, 1, 3) == False:
+                        continue
+                    else:
+                        drop_piece(board, 1, 3, 2)
+                        pygame.draw.circle(screen, YELLOW, (537, 387), 30)
+                        pygame.display.update()
+                        print_board(board)
+                elif x > 475 and y > 475:
+                    if is_move_valid(board, 0, 3) == False:
+                        continue
+                    else:
+                        drop_piece(board, 0, 3, 2)
+                        pygame.draw.circle(screen, YELLOW, (537, 537), 30)
+                        pygame.display.update()
+                        print_board(board)
+                if winning_move(board, 2):
+                    screen.fill(BLACK)
+                    label = myfont.render("Player 2 Wins!", True, 2, YELLOW)
+                    screen.blit(label, (10, 10))
+                    pygame.display.update()
+                    game_over = True
+            
+            turn += 1
+            turn = turn % 2
+
+            if game_over:
+                pygame.time.wait(3000)
